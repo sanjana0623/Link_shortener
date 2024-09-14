@@ -1,0 +1,71 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class LinkShortener {
+
+    private static URLMapping urlMapping = new URLMapping();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("1. Shorten URL");
+            System.out.println("2. Expand URL");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter long URL: ");
+                    String longURL = scanner.nextLine();
+                    String shortURL = urlMapping.shortenURL(longURL);
+                    System.out.println("Short URL: " + shortURL);
+                    break;
+                case 2:
+                    System.out.print("Enter short URL: ");
+                    String shortURLToExpand = scanner.nextLine();
+                    String expandedURL = urlMapping.expandURL(shortURLToExpand);
+                    System.out.println("Long URL: " + expandedURL);
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+
+    // URLMapping class
+    private static class URLMapping {
+        private Map<String, String> urlToShort;
+        private Map<String, String> shortToUrl;
+
+        public URLMapping() {
+            urlToShort = new HashMap<>();
+            shortToUrl = new HashMap<>();
+        }
+
+        public String shortenURL(String longURL) {
+            if (urlToShort.containsKey(longURL)) {
+                return urlToShort.get(longURL);
+            }
+            String shortURL = generateShortURL(longURL);
+            urlToShort.put(longURL, shortURL);
+            shortToUrl.put(shortURL, longURL);
+            return shortURL;
+        }
+
+        public String expandURL(String shortURL) {
+            return shortToUrl.getOrDefault(shortURL, "URL not found");
+        }
+
+        private String generateShortURL(String longURL) {
+            // Simple hash-based short URL
+            return Integer.toHexString(longURL.hashCode());
+        }
+    }
+}
